@@ -5,7 +5,9 @@ num3 = str(int(input()))
 num4 = str(int(input()))
 nums = "1234"
 rearrangement = [" ".join(x) for x in itertools.permutations(nums, 4)] 
-for x in rearrangement:
-    for y in list(x):
+for y in rearrangement:
+    y 
+    for z in list(y):
         pass
 ans = []
+print(rearrangement)
