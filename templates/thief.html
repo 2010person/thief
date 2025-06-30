@@ -3,6 +3,7 @@
     <title>Thief Rearrangement</title>
 </head>
 <body>
+    <audio id="bgm" src="{{ url_for('static', filename='thief.mp3') }}" autoplay loop></audio>
     <h1>Enter Four Numbers</h1>
     <form method="post">
         <input type="text" name="num1" value="{{ num1 }}" required>
@@ -19,5 +20,6 @@
         {% endfor %}
         </ul>
     {% endif %}
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

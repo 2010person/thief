@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Criminals List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="flashing-bg">
+    <audio id="bgm" src="{{ url_for('static', filename='missionimpossible.mp3') }}" autoplay loop></audio>
+    <h1>All Criminals</h1>
+    <ul>
+        {% for criminal in criminals %}
+            <li>{{ criminal }}</li>
+        {% endfor %}
+    </ul>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+.login_failed {
+    color: red;
+}
+.eye-icon {
+    cursor: pointer;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    margin-left: -30px;
+    margin-bottom: -5px;
+}
+.password-wrapper {
+    display: inline-block;
+    position: relative;
+}
+.password-input {
+    padding-right: 30px;
+}
+@keyframes blue-flash {
+    0% { background-color: #0074D9; }
+    50% { background-color: #00BFFF; }
+    100% { background-color: #0074D9; }
+}
+
+.flashing-bg {
+    animation: blue-flash 1s infinite;
+}

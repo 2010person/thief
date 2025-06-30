@@ -2,8 +2,29 @@
 <html>
 <head>
     <title>Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Welcome</h1>
+    {% if logged_in %}
+        <p>Login successful! Welcome, {{ username }}.</p>
+    {% elif username %}
+        <p class="login_failed">Login failed. Please try again.</p>
+    {% endif %}
+    <form method="post">
+        <input type="text" name="username" placeholder="Username" value="{{ username }}" required>
+        <span class="password-wrapper">
+            <input type="password" id="password" name="password" placeholder="Password" value="{{ password }}" required>
+            <svg id="togglePassword" class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/>
+            </svg>
+        </span>
+        <button type="submit">Login</button>
+    </form>
+    <form action="{{ url_for('register') }}" method="get" style="margin-top:10px;">
+        <button type="submit">Register</button>
+    </form>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
