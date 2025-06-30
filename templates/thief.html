@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+    <title>Thief Rearrangement</title>
+</head>
+<body>
+    <h1>Enter Four Numbers</h1>
+    <form method="post">
+        <input type="text" name="num1" value="{{ num1 }}" required>
+        <input type="text" name="num2" value="{{ num2 }}" required>
+        <input type="text" name="num3" value="{{ num3 }}" required>
+        <input type="text" name="num4" value="{{ num4 }}" required>
+        <button type="submit">Submit</button>
+    </form>
+    {% if ans %}
+        <h2>All Rearrangements:</h2>
+        <ul>
+        {% for pattern in ans %}
+            <li>{{ pattern }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
