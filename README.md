@@ -1,3 +1,3 @@
 # thief
 school project
-# no conrtibutions
+# no conrtributions please

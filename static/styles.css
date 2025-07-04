@@ -23,5 +23,142 @@
 }
 
 .flashing-bg {
-    animation: blue-flash 1s infinite;
+    animation: blue-flash 2s infinite;
+    transition: background-color 0.5s;
 }
+
+.back-btn {
+    background: #003366;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.2s;
+}
+
+.back-btn:hover {
+    background: #005fa3;
+}
+
+ul {
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
+    padding: 20px 40px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    list-style: none;
+    margin: 0 auto 30px auto;
+    max-width: 400px;
+}
+
+li {
+    color: #003366;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+h1 {
+    color: #fff;
+    text-shadow: 2px 2px 8px #003366;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.loading-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,32,0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s;
+}
+
+.siren {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.siren-light {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: siren-flash 0.6s infinite alternate;
+}
+
+.siren-light.red {
+    background: red;
+    animation-delay: 0s;
+}
+
+.siren-light.blue {
+    background: #00BFFF;
+    animation-delay: 0.3s;
+}
+
+@keyframes siren-flash {
+    from { opacity: 0.7; }
+    to { opacity: 0.1; }
+}
+
+.loading-text {
+    color: #fff;
+    font-size: 1.5em;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px #003366;
+}
+
+.hacker-loading-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #0a0f0a;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s;
+}
+
+.hacker-portal {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 6px solid #00ff99;
+    box-shadow: 0 0 40px 10px #00ff99, 0 0 80px 30px #008f55 inset;
+    animation: portal-spin 1.2s linear infinite;
+    margin-bottom: 30px;
+    background: rgba(0,255,128,0.05);
+}
+
+@keyframes portal-spin {
+    0% { transform: rotate(0deg) scale(1); box-shadow: 0 0 40px 10px #00ff99, 0 0 80px 30px #008f55 inset; }
+    50% { transform: rotate(180deg) scale(1.08); box-shadow: 0 0 60px 20px #00ff99, 0 0 100px 40px #00ff99 inset; }
+    100% { transform: rotate(360deg) scale(1); box-shadow: 0 0 40px 10px #00ff99, 0 0 80px 30px #008f55 inset; }
+}
+
+.hacker-loading-text {
+    color: #00ff99;
+    font-size: 1.5em;
+    letter-spacing: 2px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    text-shadow: 0 0 10px #00ff99, 0 0 20px #008f55;

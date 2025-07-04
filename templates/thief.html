@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <head>
     <title>Thief Rearrangement</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+<div id="loading-screen" class="hacker-loading-screen">
+    <div class="hacker-portal"></div>
+    <div class="hacker-loading-text">Hacking tools loading...</div>
+</div>
 <body>
     <audio id="bgm" src="{{ url_for('static', filename='thief.mp3') }}" autoplay loop></audio>
     <h1>Enter Four Numbers</h1>

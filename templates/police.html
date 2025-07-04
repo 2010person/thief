@@ -12,6 +12,14 @@
             <li>{{ criminal }}</li>
         {% endfor %}
     </ul>
+    <a href="{{ url_for('index') }}" class="back-btn">Back to Login</a>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
+<div id="loading-screen" class="loading-screen">
+    <div class="siren">
+        <div class="siren-light red"></div>
+        <div class="siren-light blue"></div>
+    </div>
+    <div class="loading-text">You'll be able to catch them soon...</div>
+</div>
 </html>
