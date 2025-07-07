@@ -1,9 +1,13 @@
 import itertools #This is a module in the standard library whicb can iterate to allow for efficiency
 from flask import Flask, render_template, request, redirect, url_for #Flask allows me to create a backend for the website
 import hashlib #This is a module which allows me to hash passwords - even I can't see them!
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 app = Flask(__name__) 
+limiter = Limiter(get_remote_address, app=app)
 
 @app.route('/', methods=["GET", "POST"])
+@limiter.limit("10 per minute")
 def index():
     if request.method == "POST":
         logged_in = False
@@ -26,6 +30,7 @@ def index():
     return render_template('index.html', logged_in=False, username="", password="") 
 
 @app.route("/thief", methods=["POST", "GET"])
+@limiter.limit("10 per minute")
 def thief():
     if request.method == "POST":
         try: 
@@ -47,6 +52,7 @@ def thief():
     return render_template("thief.html", ans="", num1="", num2="", num3="", num4="")
 
 @app.route("/register", methods=["POST", "GET"])
+@limiter.limit("10 per minute")
 def register():
     if request.method == "POST":
         username = request.form.get("username", "")
@@ -67,6 +73,7 @@ def register():
     return render_template('register.html', username="", password="", message="")
 
 @app.route("/police", methods=["POST", "GET"])
+@limiter.limit("10 per minute")
 def police():
     criminals = []
     with open("database.txt", "r") as f:
