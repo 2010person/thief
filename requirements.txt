@@ -1,2 +1,4 @@
 Flask
 flask-limiter
+python-dotenv
+gunicorn

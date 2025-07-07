@@ -1,10 +1,14 @@
+import os
 import itertools #This is a module in the standard library whicb can iterate to allow for efficiency
-from flask import Flask, render_template, request, redirect, url_for #Flask allows me to create a backend for the website
+from flask import Flask, render_template, request, redirect, url_for, session, render_template_string #Flask allows me to create a backend for the website
 import hashlib #This is a module which allows me to hash passwords - even I can't see them!
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from dotenv import load_dotenv
 app = Flask(__name__) 
 limiter = Limiter(get_remote_address, app=app)
+load_dotenv()
+app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 
 @app.route('/', methods=["GET", "POST"])
 @limiter.limit("10 per minute")
@@ -25,6 +29,8 @@ def index():
             password_on_file = number_of_the_line.split(",")[1].strip()
             if password_on_file == hashlib.sha256(password.encode()).hexdigest():
                 logged_in = True
+                session["logged in"] = True
+                session["username"] = username
                 return redirect(url_for('thief'))
         return render_template('index.html', logged_in=logged_in, username=username, password=password)
     return render_template('index.html', logged_in=False, username="", password="") 
@@ -48,7 +54,7 @@ def thief():
             print(ans)
             return render_template('thief.html', ans=ans, num1=num1, num2=num2, num3=num3, num4=num4)
         except ValueError:
-            print("Ooops, it would seem like you haven't inputted a number, please try again!")
+            pass #Nothing needed here
     return render_template("thief.html", ans="", num1="", num2="", num3="", num4="")
 
 @app.route("/register", methods=["POST", "GET"])
