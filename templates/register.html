@@ -15,5 +15,7 @@
         <button type="submit">Register</button>
     </form>
     <p>Already have an account? <a href="{{ url_for('index') }}">Login here</a>.</p>
+    {% include 'cookie_banner.html' %}
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

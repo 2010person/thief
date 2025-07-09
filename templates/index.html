@@ -8,8 +8,11 @@
     <h1>Welcome</h1>
     {% if logged_in %}
         <p>Login successful! Welcome, {{ username }}.</p>
-    {% elif username %}
+    {% elif username and not logged_in %}
         <p class="login_failed">Login failed. Please try again.</p>
+    {% endif %}
+    {% if redirect_message %}
+        <p>{{ redirect_message }}</p>
     {% endif %}
     <form method="post">
         <input type="text" name="username" placeholder="Username" value="{{ username }}" required>
@@ -25,6 +28,7 @@
     <form action="{{ url_for('register') }}" method="get" style="margin-top:10px;">
         <button type="submit">Register</button>
     </form>
+    {% include 'cookie_banner.html' %}
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

@@ -11,8 +11,14 @@ load_dotenv()
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 
 @app.route('/', methods=["GET", "POST"])
-@limiter.limit("10 per minute")
+@limiter.limit("20 per minute")
 def index():
+    cookies_accepted = request.cookies.get('cookies_accepted')
+    message = None
+    if request.args.get("redirect") == "True":
+        message = "To view that page please log in."
+    if request.args.get("unameredirect") == "True":
+        message = "Your account dosen't have the neccessary permissions to access that page."
     if request.method == "POST":
         logged_in = False
         username = request.form.get("username", "")
@@ -27,17 +33,23 @@ def index():
                             break
         if number_of_the_line is not None and password:
             password_on_file = number_of_the_line.split(",")[1].strip()
-            if password_on_file == hashlib.sha256(password.encode()).hexdigest():
+            if password_on_file == hashlib.sha256(password.encode()).hexdigest() and cookies_accepted == "true":
                 logged_in = True
-                session["logged in"] = True
+                session["logged_in"] = True
                 session["username"] = username
                 return redirect(url_for('thief'))
+        elif username == "police" and password == "fbi":
+            session["logged_in"] = True
+            session["username"] = username
+            return redirect(url_for("police"))
         return render_template('index.html', logged_in=logged_in, username=username, password=password)
-    return render_template('index.html', logged_in=False, username="", password="") 
+    return render_template('index.html', logged_in=False, username="", password="", redirect_message=message) 
 
 @app.route("/thief", methods=["POST", "GET"])
 @limiter.limit("10 per minute")
 def thief():
+    if not session.get("logged_in"):
+        return redirect(url_for("index", redirect=True))
     if request.method == "POST":
         try: 
             #taking inputs from the user
@@ -81,6 +93,10 @@ def register():
 @app.route("/police", methods=["POST", "GET"])
 @limiter.limit("10 per minute")
 def police():
+    if not session.get("logged_in"):
+        return redirect(url_for("index", redirect=True))
+    elif session.get("username") != "police":
+        return redirect(url_for("index", unameredirect=True))
     criminals = []
     with open("database.txt", "r") as f:
             for line in f:
