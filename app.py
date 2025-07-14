@@ -1,3 +1,4 @@
+import sqlite3
 import os
 import itertools #This is a module in the standard library whicb can iterate to allow for efficiency
 from flask import Flask, render_template, request, redirect, url_for, session, render_template_string #Flask allows me to create a backend for the website
@@ -9,6 +10,26 @@ app = Flask(__name__)
 limiter = Limiter(get_remote_address, app=app)
 load_dotenv()
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
+
+def get_db():
+    conn = sqlite3.connect("main.db")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_db()
 
 @app.route('/', methods=["GET", "POST"])
 @limiter.limit("20 per minute")
@@ -23,21 +44,16 @@ def index():
         logged_in = False
         username = request.form.get("username", "")
         password = request.form.get("password", "")
-        number_of_the_line = None
-        if username:
-            with open("database.txt", "r") as f:
-                    unames = [line.strip() for line in f.readlines()]
-                    for the_line in unames:
-                        if the_line.startswith(username + ","):
-                            number_of_the_line = the_line
-                            break
-        if number_of_the_line is not None and password:
-            password_on_file = number_of_the_line.split(",")[1].strip()
-            if password_on_file == hashlib.sha256(password.encode()).hexdigest() and cookies_accepted == "true":
-                logged_in = True
-                session["logged_in"] = True
-                session["username"] = username
-                return redirect(url_for('thief'))
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
+        row = c.fetchone()
+        conn.close()
+        if row and password and row["password_hash"] == hashlib.sha256(password.encode()).hexdigest() and cookies_accepted == "true":
+            logged_in = True
+            session["logged_in"] = True
+            session["username"] = username
+            return redirect(url_for('thief'))
         elif username == "police" and password == "fbi":
             session["logged_in"] = True
             session["username"] = username
@@ -76,16 +92,18 @@ def register():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
         if username and password:
-            with open("database.txt", "r") as f:
-                    for line in f:
-                        if line.strip().split(",")[0] == username:
-                            exists = True
-                            break
+            conn = get_db()
+            c = conn.cursor()
+            c.execute("SELECT 1 FROM users WHERE username = ?", (username,))
+            exists = c.fetchone()
             if exists:
+                conn.close()
                 message = "Username already exists. Please choose a different username."
                 return render_template('register.html', message=message, username=username, password=password)
-            with open("database.txt", "a") as f:
-                f.write(f"{username},{hashlib.sha256(password.encode()).hexdigest()}\n")
+            c.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)",
+                      (username, hashlib.sha256(password.encode()).hexdigest()))
+            conn.commit()
+            conn.close()
             return redirect(url_for('index'))
         return render_template('register.html', username=username, password=password, message="Please fill in both fields.")
     return render_template('register.html', username="", password="", message="")
@@ -97,9 +115,9 @@ def police():
         return redirect(url_for("index", redirect=True))
     elif session.get("username") != "police":
         return redirect(url_for("index", unameredirect=True))
-    criminals = []
-    with open("database.txt", "r") as f:
-            for line in f:
-                username = line.strip().split(",")[0]
-                criminals.append(username)
-    return render_template('police.html', criminals=criminals)            
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT username FROM users")
+    criminals = [row["username"] for row in c.fetchall()]
+    conn.close()
+    return render_template('police.html', criminals=criminals)          
