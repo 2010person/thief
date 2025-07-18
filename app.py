@@ -1,4 +1,4 @@
-import sqlite3
+import mysql.connector
 import os
 import itertools #This is a module in the standard library whicb can iterate to allow for efficiency
 from flask import Flask, render_template, request, redirect, url_for, session, render_template_string #Flask allows me to create a backend for the website
@@ -12,8 +12,12 @@ load_dotenv()
 app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 
 def get_db():
-    conn = sqlite3.connect("main.db")
-    conn.row_factory = sqlite3.Row
+    conn = mysql.connector.connect(
+        host=os.environ.get("MYSQL_HOST"),
+        user=os.environ.get("MYSQL_USER"),
+        password=os.environ.get("MYSQL_PASSWORD"),
+        database=os.environ.get("MYSQL_DATABASE")
+    )
     return conn
 
 def init_db():
@@ -21,9 +25,9 @@ def init_db():
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL
         )
     """)
     conn.commit()
@@ -46,10 +50,10 @@ def index():
         password = request.form.get("password", "")
         conn = get_db()
         c = conn.cursor()
-        c.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
+        c.execute("SELECT password_hash FROM users WHERE username = %s", (username,))
         row = c.fetchone()
         conn.close()
-        if row and password and row["password_hash"] == hashlib.sha256(password.encode()).hexdigest() and cookies_accepted == "true":
+        if row and password and row[0] == hashlib.sha256(password.encode()).hexdigest() and cookies_accepted == "true":
             logged_in = True
             session["logged_in"] = True
             session["username"] = username
@@ -94,13 +98,13 @@ def register():
         if username and password:
             conn = get_db()
             c = conn.cursor()
-            c.execute("SELECT 1 FROM users WHERE username = ?", (username,))
+            c.execute("SELECT 1 FROM users WHERE username = %s", (username,))
             exists = c.fetchone()
             if exists:
                 conn.close()
                 message = "Username already exists. Please choose a different username."
                 return render_template('register.html', message=message, username=username, password=password)
-            c.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)",
+            c.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)",
                       (username, hashlib.sha256(password.encode()).hexdigest()))
             conn.commit()
             conn.close()
@@ -118,6 +122,6 @@ def police():
     conn = get_db()
     c = conn.cursor()
     c.execute("SELECT username FROM users")
-    criminals = [row["username"] for row in c.fetchall()]
+    criminals = [row[0] for row in c.fetchall()]
     conn.close()
     return render_template('police.html', criminals=criminals)          

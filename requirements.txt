@@ -3,3 +3,4 @@ flask-limiter
 python-dotenv
 gunicorn
 flask_sqlalchemy
+mysql-connector-python
