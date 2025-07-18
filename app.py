@@ -100,7 +100,7 @@ def register():
             c = conn.cursor()
             c.execute("SELECT 1 FROM users WHERE username = %s", (username,))
             exists = c.fetchone()
-            if exists:
+            if exists or username == "police":
                 conn.close()
                 message = "Username already exists. Please choose a different username."
                 return render_template('register.html', message=message, username=username, password=password)
