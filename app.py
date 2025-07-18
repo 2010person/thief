@@ -53,15 +53,15 @@ def index():
         c.execute("SELECT password_hash FROM users WHERE username = %s", (username,))
         row = c.fetchone()
         conn.close()
-        if row and password and row[0] == hashlib.sha256(password.encode()).hexdigest() and cookies_accepted == "true":
+        if username == "police" and password == "fbi":
+            session["logged_in"] = True
+            session["username"] = username
+            return redirect(url_for("police"))
+        elif row and password and row[0] == hashlib.sha256(password.encode()).hexdigest() and cookies_accepted == "true":
             logged_in = True
             session["logged_in"] = True
             session["username"] = username
             return redirect(url_for('thief'))
-        elif username == "police" and password == "fbi":
-            session["logged_in"] = True
-            session["username"] = username
-            return redirect(url_for("police"))
         return render_template('index.html', logged_in=logged_in, username=username, password=password)
     return render_template('index.html', logged_in=False, username="", password="", redirect_message=message) 
 
